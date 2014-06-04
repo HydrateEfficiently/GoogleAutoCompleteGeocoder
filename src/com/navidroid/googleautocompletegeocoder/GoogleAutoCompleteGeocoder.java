@@ -1,6 +1,5 @@
 package com.navidroid.googleautocompletegeocoder;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,6 +16,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AutoCompleteTextView;
 
@@ -127,18 +127,14 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 	}
 	
 	private void setupOnItemSelectedListener() {
-		setOnItemSelectedListener(new OnItemSelectedListener() {
+		setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				assert currentAddresses != null;
 				Address selected = currentAddresses.get(position);
 				if (onAddressSelectedHandler != null) {
 					onAddressSelectedHandler.invoke(selected);
 				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 	}
