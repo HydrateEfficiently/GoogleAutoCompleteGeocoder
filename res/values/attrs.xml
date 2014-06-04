@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GoogleAutocompleteGeocoder">
+        <attr name="apiKey" format="string" />
+        <attr name="useClientSide" format="boolean" />
+        <attr name="maxResults" format="string" />
+        <attr name="adapterResourceId" format="reference" />
+        <attr name="minCharacters" format="string" />
+    </declare-styleable>
+</resources>
