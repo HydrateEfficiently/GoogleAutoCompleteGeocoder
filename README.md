@@ -33,6 +33,7 @@ autoCompleteGeocoder.setOnAddressSelectedHandler(new OnFoundSuggestionsHandler()
     @Override
     public void invoke(List<Address> suggestions) {
         // Do something with the suggested addresses
+    }
 });
 ```
 
