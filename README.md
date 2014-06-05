@@ -23,17 +23,16 @@ Declared in Android XML:
 Event handling:
 ```java
 autoCompleteGeocoder.setOnAddressSelectedHandler(new OnAddressSelectedHandler() {
-  @Override
-  public void invoke(Address address) {
-    // Do something with the selected address
-  }
+    @Override
+    public void invoke(Address address) {
+        // Do something with the selected address
+    }
 });
 
 autoCompleteGeocoder.setOnAddressSelectedHandler(new OnFoundSuggestionsHandler() {
-  @Override
-  public void invoke(List<Address> suggestions) {
-    // Do something with the selected address
-  }
+    @Override
+    public void invoke(List<Address> suggestions) {
+        // Do something with the suggested addresses
 });
 ```
 
