@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.navidroid.googleautocompletegeocoder.GoogleGeocoderWrapper.OnGeocodeFailure;
 import com.navidroid.googleautocompletegeocoder.GoogleGeocoderWrapper.OnGeocodeSuccess;
 import com.navidroid.googleautocompletegeocoder.R;
 import android.content.Context;
@@ -14,10 +15,11 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AutoCompleteTextView;
 
 public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
@@ -37,6 +39,20 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 	private OnFoundSuggestionsHandler onFoundSuggestionsHandler;
 	private GoogleGeocoderWrapper geocoder;
 	private GeocodeHeuristics heuristics;
+	
+	private OnGeocodeSuccess onGeocodeSuccess = new OnGeocodeSuccess() {
+		@Override
+		public void invoke(List<Address> addresses) {
+			updateAutoComplete(addresses);
+		}
+	};
+	
+	private OnGeocodeFailure onGeocodeFailure = new OnGeocodeFailure() {
+		@Override
+		public void invoke(Exception e) {
+			Log.e("GoogleAutoCompleteGeocoder", e.getMessage(), e);
+		}
+	};
 
 	public GoogleAutoCompleteGeocoder(Context context, AttributeSet attrs) throws Exception {
 		super(context, attrs);
@@ -97,12 +113,7 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 						@Override
 						public void run() {
 							if (textLastEnteredTime + AUTO_COMPLETE_DELAY_MS < System.currentTimeMillis()) {
-								geocoder.geocode(searchRef, heuristics, new OnGeocodeSuccess() {
-									@Override
-									public void invoke(List<Address> addresses) {
-										updateAutoComplete(addresses);
-									}
-								});
+								geocoder.geocode(searchRef, heuristics, onGeocodeSuccess, onGeocodeFailure);
 							}
 						}
 					}, AUTO_COMPLETE_DELAY_MS);
@@ -144,7 +155,7 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 		if (addressParts.length == 0) {
 			return false;
 		} else if (addressParts.length == 1) {
-			return !Character.isDigit(addressParts[0].charAt(0));
+			return addressParts[0].length() > 0 && !Character.isDigit(addressParts[0].charAt(0));
 		} else {
 			return true;
 		}

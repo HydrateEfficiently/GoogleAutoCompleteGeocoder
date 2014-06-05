@@ -1,6 +1,7 @@
 package com.navidroid.googleautocompletegeocoder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -44,23 +45,28 @@ public class ClientGeocoder implements GoogleGeocoderWrapper {
 		AsyncTaskExecutor.execute(asyncGeocodeTask, location);
 	}
 	
-	public void geocode(String search, final GeocodeHeuristics heuristics, final OnGeocodeSuccess onGeocodeSuccess) {
-		AsyncTask<String, Void, List<Address>> asyncGeocodeTask = new AsyncTask<String, Void, List<Address>>() {
+	public void geocode(String search, final GeocodeHeuristics heuristics, final OnGeocodeSuccess onGeocodeSuccess, final OnGeocodeFailure onGeocodeFailure) {
+		AsyncTask<String, Void, GeocodeResult> asyncGeocodeTask = new AsyncTask<String, Void, GeocodeResult>() {
 			@Override
-			protected List<Address> doInBackground(String... params) {
+			protected GeocodeResult doInBackground(String... params) {
+				GeocodeResult result = new GeocodeResult();
 				String search = params[0];
 				try {
 					LatLngBounds bounds = heuristics.bounds;
-					return bounds == null ? getFromLocationName(search, 5) : getFromLocationName(search, 5, bounds);
+					result.addresses = bounds == null ? getFromLocationName(search, 5) : getFromLocationName(search, 5, bounds);
 				} catch (IOException e) {
-					e.printStackTrace();
+					result.e = e;
 				}
-				return null;
+				return result;
 			}
 			
 			@Override
-			protected void onPostExecute(List<Address> result) {
-				onGeocodeSuccess.invoke(result);
+			protected void onPostExecute(GeocodeResult result) {
+				if (result.addresses != null) {
+					onGeocodeSuccess.invoke(result.addresses);
+				} else {
+					onGeocodeFailure.invoke(result.e);
+				}
 			}
 		};
 		

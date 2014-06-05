@@ -16,8 +16,12 @@ public interface GoogleGeocoderWrapper {
 		void invoke(List<Address> address);
 	}
 	
+	public interface OnGeocodeFailure {
+		void invoke(Exception e);
+	}
+	
 	void reverseGeocode(LatLng location, OnReverseGeocodeSuccess onReverseGeocodeSuccess);
 	
-	void geocode(String search, GeocodeHeuristics heuristics, OnGeocodeSuccess onGeocodeSuccess);
+	void geocode(String search, GeocodeHeuristics heuristics, OnGeocodeSuccess onGeocodeSuccess, OnGeocodeFailure onGeocodeFailure);
 	
 }
