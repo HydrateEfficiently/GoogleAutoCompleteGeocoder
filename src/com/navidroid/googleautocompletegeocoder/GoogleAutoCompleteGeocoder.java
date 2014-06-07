@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 	private ArrayAdapterNoFilter autoCompleteAdapter;
 	private OnAddressSelectedHandler onAddressSelectedHandler;
 	private OnFoundSuggestionsHandler onFoundSuggestionsHandler;
+	private OnSearchStringSelectedHandler onSearchStringSelectedHandler;
 	private GoogleGeocoderWrapper geocoder;
 	private GeocodeHeuristics heuristics;
 	
@@ -94,6 +96,7 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 		
 		setupTextWatcher();
 		setupOnItemSelectedListener();
+		setupOnEnterPressedListener();
 		setThreshold(DEFAULT_MINIMUM_CHARACTERS);
 		autoCompleteAdapter = new ArrayAdapterNoFilter(context, R.layout.autocomplete_textview);
 		setAdapter(autoCompleteAdapter);
@@ -150,6 +153,20 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 		});
 	}
 	
+	private void setupOnEnterPressedListener() {
+		setOnKeyListener(new OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+					if (onSearchStringSelectedHandler != null) {
+						onSearchStringSelectedHandler.invoke(getText().toString());
+					}
+				}
+				return false;
+			}
+		});
+	}
+	
 	private boolean shouldTryGeocode(String search) {
 		String[] addressParts = search.split(" ");
 		if (addressParts.length == 0) {
@@ -202,5 +219,9 @@ public class GoogleAutoCompleteGeocoder extends AutoCompleteTextView {
 	
 	public void setOnFoundSuggestionsHandler(OnFoundSuggestionsHandler handler) {
 		onFoundSuggestionsHandler = handler;
+	}
+	
+	public void setOnSearchStringSelectedHandler(OnSearchStringSelectedHandler handler) {
+		onSearchStringSelectedHandler = handler;
 	}
 }
